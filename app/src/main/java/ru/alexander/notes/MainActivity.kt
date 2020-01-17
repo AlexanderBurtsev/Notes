@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), ItemClicked {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var customAdater: RecyclerView.Adapter<NoteAdapter.ViewHolder>
+    private lateinit var customAdapter: RecyclerView.Adapter<NoteAdapter.ViewHolder>
     private lateinit var layoutManager: RecyclerView.LayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity(), ItemClicked {
         layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
-        customAdater = NoteAdapter(this, ApplicationClass.notes)
-        recyclerView.adapter = customAdater
+        customAdapter = NoteAdapter(this, ApplicationClass.notes)
+        recyclerView.adapter = customAdapter
 
         btnAdd.setOnClickListener {
             val intent = Intent(this, AddNoteActivity::class.java)
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), ItemClicked {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            customAdater.notifyDataSetChanged()
+            customAdapter.notifyDataSetChanged()
         }
 
         super.onActivityResult(requestCode, resultCode, data)
