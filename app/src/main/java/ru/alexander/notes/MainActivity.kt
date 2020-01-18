@@ -4,15 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), ItemClicked {
+class MainActivity : AppCompatActivity(), NoteAdapter.ItemClicked {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var customAdapter: RecyclerView.Adapter<NoteAdapter.ViewHolder>
-    private lateinit var layoutManager: RecyclerView.LayoutManager
+    private lateinit var adapter: NoteAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,21 +21,29 @@ class MainActivity : AppCompatActivity(), ItemClicked {
         recyclerView = listNotes
         recyclerView.setHasFixedSize(true)
 
-        layoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = layoutManager
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        customAdapter = NoteAdapter(this, ApplicationClass.notes)
-        recyclerView.adapter = customAdapter
+        adapter = NoteAdapter(this, ApplicationClass.notes)
+        recyclerView.adapter = adapter
 
         btnAdd.setOnClickListener {
             val intent = Intent(this, AddNoteActivity::class.java)
             startActivityForResult(intent, 1)
         }
+
+        val swipeHandler = object : SwipeToDeleteCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.removeAt(viewHolder.adapterPosition)
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            customAdapter.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
 
         super.onActivityResult(requestCode, resultCode, data)
